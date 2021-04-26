@@ -1,0 +1,3 @@
+[submodule "hasc-code"]
+	path = hasc-code
+	url = https://parcomp-git.iwr.uni-heidelberg.de/Teaching/hasc-code.git
