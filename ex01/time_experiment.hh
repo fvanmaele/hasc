@@ -1,7 +1,7 @@
 #ifndef HASC_TIME_EXPERIMENT_HH
 #define HASC_TIME_EXPERIMENT_HH
 
-#include <chrono> 
+#include <chrono>
 
 /*! \brief time an experiment
  * This function template takes an experiment, which is a class with a method
@@ -17,28 +17,28 @@
  * \param mintime minimum total runtime (given in microseconds)
  *
  */
-template<typename T>
-auto time_experiment (const T& experiment, int mintime=250000)
+template <typename T>
+auto time_experiment(const T &experiment, int mintime = 250000)
 {
   auto start = std::chrono::high_resolution_clock::now();
   auto stop = start;
-  auto duration = stop-start;
+  auto duration = stop - start;
   auto dcast = std::chrono::duration_cast<std::chrono::microseconds>(duration).count();
-  std::pair<int,decltype(dcast)> rv;
+  std::pair<int, decltype(dcast)> rv;
   int rep = 1;
-  while (dcast<mintime && rep<1000000000)
-    {
-      start = std::chrono::high_resolution_clock::now();
-      for (int i=0; i<rep; i++)
-	experiment.run();
-      stop = std::chrono::high_resolution_clock::now();
-      duration = stop-start;
-      dcast = std::chrono::duration_cast<std::chrono::microseconds>(duration).count();
-      //std::cout << " rep=" << rep << " d=" << dcast << std::endl;
-      rv.first = rep;
-      rv.second = dcast;
-      rep *= 2;
-    }
+  while (dcast < mintime && rep < 1000000000)
+  {
+    start = std::chrono::high_resolution_clock::now();
+    for (int i = 0; i < rep; i++)
+      experiment.run();
+    stop = std::chrono::high_resolution_clock::now();
+    duration = stop - start;
+    dcast = std::chrono::duration_cast<std::chrono::microseconds>(duration).count();
+    //std::cout << " rep=" << rep << " d=" << dcast << std::endl;
+    rv.first = rep;
+    rv.second = dcast;
+    rep *= 2;
+  }
   return rv;
 }
 

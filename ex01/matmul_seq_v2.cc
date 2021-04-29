@@ -5,7 +5,7 @@
 
 // This assumes that vector class library
 // is available in the directory vcl
-#include "vcl/vectorclass.h"
+#include <vectorclass.h>
 
 const int P = 24;   // basic block size is a multiple of 4, 8 and 12
 const int Q = 4;    // multiplier

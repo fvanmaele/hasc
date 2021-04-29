@@ -3,7 +3,14 @@ project(hasc)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+# set(THREADS_PREFER_PTHREAD_FLAG ON)
+find_package(Threads REQUIRED)
+#find_package(benchmark REQUIRED)
+#find_package(fmt CONFIG REQUIRED)
+find_package(vectorclass REQUIRED)
+
 # Define optimization levels
+# XXX: Whatever you do here, release/etc will take precedence. CMake == Cursed Make
 set(OPT_LEVEL_LOW OFF)
 set(OPT_LEVEL_MEDIUM OFF)
 set(OPT_LEVEL_HIGH ON)
@@ -54,7 +61,7 @@ elseif(OPT_LEVEL_HIGH)
         )
         elseif(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
         add_compile_options(
-                -O3 -march=native -funroll-loops -ffast-math
+                -O3 -march=native -ffast-math
         )
         endif()
 endif()
@@ -72,54 +79,11 @@ endif()
 
 #add_compile_definitions(NDEBUG)
 
-# set(THREADS_PREFER_PTHREAD_FLAG ON)
-find_package(Threads REQUIRED)
-find_package(benchmark REQUIRED)
-find_package(fmt CONFIG REQUIRED)
+# Exercise 01
+add_executable(matmul_seq_v1 matmul_seq_v1.cc)
+add_executable(matmul_seq_v2 matmul_seq_v2.cc)
+target_link_libraries(matmul_seq_v2 PRIVATE vectorclass::vectorclass)
 
-# add_executable(scalar_product_v0 scalar_product_v0.cc)
+add_executable(pointer_chasing pointer_chasing.cc)
 
-# add_executable(scalar_product_v1 scalar_product_v1.cc)
-# target_link_libraries(scalar_product_v1 Threads::Threads)
 
-# add_executable(scalar_product_v2 scalar_product_v2.cc)
-# target_link_libraries(scalar_product_v2 Threads::Threads)
-
-# add_executable(scalar_product_v3 scalar_product_v3.cc)
-# target_link_libraries(scalar_product_v3 Threads::Threads)
-
-# add_executable(scalar_product_v4 scalar_product_v4.cc)
-# target_link_libraries(scalar_product_v4 Threads::Threads)
-
-# add_executable(scalar_product_v5 scalar_product_v5.cc)
-# target_link_libraries(scalar_product_v5 Threads::Threads)
-
-# add_executable(matmul_seq_v1 matmul_seq_v1.cc)
-
-# add_executable(pointer_chasing pointer_chasing.cc)
-
-# Exercise 00
-add_executable(compiler_flags compiler_flags.cc)
-
-add_executable(compiler_flags_bm compiler_flags_bm.cc)
-target_link_libraries(compiler_flags_bm 
-        benchmark::benchmark benchmark::benchmark_main
-)
-
-add_executable(daxpy daxpy.cc)
-target_link_libraries(daxpy 
-        Threads::Threads 
-        fmt::fmt
-)
-
-add_executable(daxpy_bm daxpy_bm.cc)
-target_link_libraries(daxpy_bm
-        Threads::Threads
-        benchmark::benchmark benchmark::benchmark_main
-)
-
-add_executable(daxpy_bm_2 daxpy_bm_2.cc)
-target_link_libraries(daxpy_bm_2
-        Threads::Threads
-        benchmark::benchmark benchmark::benchmark_main
-)
