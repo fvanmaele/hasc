@@ -1,5 +1,5 @@
 CC = gcc-10
-CFLAGS = -Ofast -fargument-noalias -march=native -ffreestanding -fopenmp
+CFLAGS = -Ofast -fargument-noalias -march=native -ffreestanding -fopenmp -fopt-info-vec -DSTREAM_ARRAY_SIZE=80000000
 
 FC = gfortran
 FFLAGS = -O2 -fopenmp
@@ -19,4 +19,4 @@ clean:
 
 # an example of a more complex build line for the Intel icc compiler
 stream.icc: stream.c
-	icc -O3 -xCORE-AVX2 -ffreestanding -qopenmp -DSTREAM_ARRAY_SIZE=80000000 -DNTIMES=20 stream.c -o stream.omp.AVX2.80M.20x.icc
+	icc -O3 -xCORE-AVX-I -ffreestanding -qopenmp -DSTREAM_ARRAY_SIZE=80000000 -DNTIMES=20 stream.c -o stream.omp.AVX.80M.20x.icc

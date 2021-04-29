@@ -33,7 +33,7 @@ Aggressive optimization (`/Og` and `/Ox` for *MSVC*, `-O2` and `-O3` for *Clang*
 
 For the benchmark, we thus went with `-O1 -march=native` and Clang.
 
-*NOTE:* Instead of globally lowering optimization levels, certain functions can be annotated with a pragma.
+Optimizations can be selectively disabled instead for functions instead, e.g. through the `optnone` Clang attribute (`__attribute__((optnone))`).
 
 
 ## c) Log-log plot
@@ -43,7 +43,10 @@ For the benchmark, we thus went with `-O1 -march=native` and Clang.
 
 ## d) Analysis
 
-*[We follow Lecture03.pdf, "Exploring the Memory Hierarchy".]*
+----
+Note: We follow *Lecture03.pdf, "Exploring the Memory Hierarchy"* in this section.
+
+----
 
 CPU specifications:
 
@@ -81,6 +84,3 @@ For smaller strides, memory bandwidth is sufficent and pipeline stalls is the li
 - L2 cache: ~25 clock cycles (~7ns)
 - L3 cache: ~71 clock cycles (~20ns)
 - Main memory: ~310 cycles (~87ms)
-
-
-# Exercise 2 - Peak Performance
