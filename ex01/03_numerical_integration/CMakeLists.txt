@@ -44,7 +44,6 @@ endif()
 #add_compile_definitions(NDEBUG)
 
 # Exercise 01
-add_executable(pointer_chasing pointer_chasing.cc)
 
 add_executable(mp_bench mp_bench.cc)
 target_link_libraries(mp_bench PRIVATE 

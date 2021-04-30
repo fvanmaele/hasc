@@ -42,4 +42,6 @@ int main()
     Require(std::abs(mp2 - ig2) < 0.01, __LINE__);
     mp2 = midpoint_rule_seq(0, 1, 1000, g);
     Require(std::abs(mp2 - ig2) < 0.001, __LINE__);
+
+    // XXX: add some tests for vectorized implementation
 }
