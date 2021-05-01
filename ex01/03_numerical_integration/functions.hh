@@ -2,7 +2,7 @@
 #define HASC_EX01_FUNCTIONS_HH
 #include <cmath>
 #include <vectorclass/vectorclass.h>
-#define __forceinline inline __attribute__((always_inline))
+#include "pow_int.h"
 
 namespace hasc_ex01
 {
@@ -24,7 +24,7 @@ struct Func2
 {
     double operator()(double x)
     {
-        return (x + 1) * (x*x + 1) * (x*x*x*x + 1) * (x*x*x*x*x*x*x*x + 1);
+        return (x + 1) * (x*x + 1) * (pow_int(x, 4) + 1) * (pow_int(x, 8) + 1);
     }
     Vec4d operator()(Vec4d x)
     {
@@ -39,7 +39,7 @@ struct Prim1
 {
     double operator()(double x)
     {
-        return std::pow(x, 4)/4 - 2*std::pow(x, 3)/3 + 3*x*x/2 - x;
+        return pow_int(x, 4)/4 - 2*pow_int(x, 3)/3 + 3*x*x/2 - x;
     }
     Vec4d operator()(Vec4d x)
     {
@@ -54,13 +54,14 @@ struct Prim2
     {
         double sum = x;
         for (int i = 2; i <= 16; ++i) {
-            sum += std::pow(x, i) / i;
+            sum += pow_int(x, i) / i;
         }
         return sum;
     }
     Vec4d operator()(Vec4d x)
     {
-        return Vec4d(1, 1, 1, 1) + x + pow_const(x, 2)/2 + pow_const(x, 3)/3 + pow_const(x, 4)/4 +
+        Vec4d ones = Vec4d(1, 1, 1, 1);
+        return ones + x + pow_const(x, 2)/2 + pow_const(x, 3)/3 + pow_const(x, 4)/4 +
                pow_const(x, 5)/5 + pow_const(x, 6)/6 + pow_const(x, 7)/7 + pow_const(x, 8)/8 +
                pow_const(x, 9)/9 + pow_const(x, 10)/10 + pow_const(x, 11)/11 + pow_const(x, 12)/12 +
                pow_const(x, 13)/13 + pow_const(x, 14)/14 + pow_const(x, 15)/15;
