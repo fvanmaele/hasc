@@ -12,6 +12,7 @@ find_package(vectorclass REQUIRED)
 
 # Define optimization levels
 set(OPT_VEC_REPORT ON)
+set(OPT_FAST_MATH OFF)
 
 # Vectorization reports
 if (OPT_VEC_REPORT)
@@ -26,6 +27,18 @@ if (OPT_VEC_REPORT)
         elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
         add_compile_options(
                 -Rpass=loop-vectorize
+        )
+        endif()
+endif()
+
+if (OPT_FAST_MATH)
+        if (MSVC)
+        add_compile_options(
+                /fp:fast
+        )
+        elseif(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+        add_compile_options(
+                -ffast-math
         )
         endif()
 endif()
