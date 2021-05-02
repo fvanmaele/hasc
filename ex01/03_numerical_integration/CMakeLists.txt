@@ -6,7 +6,6 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 # set(THREADS_PREFER_PTHREAD_FLAG ON)
 find_package(Threads REQUIRED)
 find_package(benchmark REQUIRED)
-find_package(OpenMP REQUIRED)
 #find_package(fmt CONFIG REQUIRED)
 find_package(vectorclass REQUIRED)
 
@@ -61,13 +60,11 @@ endif()
 add_executable(mp_bench mp_bench.cc)
 target_link_libraries(mp_bench PRIVATE 
         vectorclass::vectorclass
-        OpenMP::OpenMP_CXX
         benchmark::benchmark benchmark::benchmark_main
 )
 
 add_executable(mp_test mp_test.cc)
 target_link_libraries(mp_test PRIVATE 
         vectorclass::vectorclass
-        OpenMP::OpenMP_CXX
         benchmark::benchmark benchmark::benchmark_main
 )
