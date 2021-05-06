@@ -1,4 +1,4 @@
-N, vanilla-consecutive-write-triangle
+N, triangle-consecutive-write
 24, 43.5064
 48, 24.1122
 96, 22.1401

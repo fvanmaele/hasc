@@ -63,7 +63,7 @@ int main()
         sizes.push_back(i);
 
     std::vector<std::string> expnames; // name of experiment
-    expnames.push_back("vanilla-consecutive-write");
+    expnames.push_back("triangle-consecutive-write");
     std::cout << expnames.back() << std::endl;
     std::vector<double> bandwidth1;
     for (auto n : sizes)
