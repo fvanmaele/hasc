@@ -5,6 +5,11 @@
 #include <cstdio>
 #include <cmath>
 
+#if defined _WIN32
+#define srand48(x) srand(x)
+#define drand48() ((double)rand()/(RAND_MAX + 1.0))
+#endif
+
 // put particles in a box of size
 // masses vary randomly by mdelta around m0
 // velocity is zero

@@ -17,6 +17,8 @@
 
 // basic data type for position, velocity, acceleration
 typedef double double3[4]; // pad up for later use with SIMD
+// basic data type for collapsed loop indices
+typedef double double2[2];
 
 /*const double gamma = 6.674E-11;*/
 const double G = 1.0;
@@ -30,7 +32,7 @@ std::vector<int> flag(P, 0); // flag indicating waiting thread
 std::mutex mx; // mutex for use with the cvs
 std::vector<std::condition_variable> cv(P); // for waiting
 std::mutex px; // mutex for protecting cout
-std::atomic_flag af{ATOMIC_FLAG_INIT}; // atomic flag for spin lock
+std::atomic_flag af = ATOMIC_FLAG_INIT; // atomic flag for spin lock
 
 using index = std::pair<int, int>;
 using index_v = std::vector<index>;
@@ -59,27 +61,6 @@ void barrier (int i)
     }
 }
 
-void P1_atomic_flag (int n)
-{
-    while (af.test_and_set(std::memory_order_acquire)) {
-        // acquire lock
-        // Since C++20, it is possible to update atomic_flag's
-        // value only when there is a chance to acquire the lock.
-#if defined(__cpp_lib_atomic_flag_test)
-        while (lock.test(std::memory_order_relaxed)) // test lock
-            ;
-#endif
-            // spin
-    }
-//    for (int i=0; i<n; i++)
-//    {
-//        bool z = af.test_and_set();
-//        while (z) z = af.test_and_set();
-//        count += 1;  // increment counter in c.s.
-//        af.clear();   // we are done
-//    }
-}
-
 auto upper_triag_index(int n)
 {
     index_v seq;
@@ -98,12 +79,15 @@ auto upper_triag_index(int n)
  * Executes \sum_{i=0}^{n-1} (n-i-1)*26 = n(n-1)*13
  * flops including 1 division and one square root
  */
-void acceleration (std::span<const index> idx, const double3 x[], const double m[], double3 a[])
+void acceleration (std::span<const index> idx, const double3 x[], int n, const double m[], double3 a[])
 {
-    for (auto&& ij : idx)
+    // local view on a (avoid locks inside a loop)
+    double3* a_local = static_cast<double3*>(calloc(n, sizeof(double3))); // zero-initialized
+
+    for (size_t k = 0; k < idx.size(); ++k)
     {
-        int i = ij.first;
-        int j = ij.second;
+        int i = idx[k].first;
+        int j = idx[k].second;
         double d0 = x[j][0]-x[i][0];
         double d1 = x[j][1]-x[i][1];
         double d2 = x[j][2]-x[i][2];
@@ -114,15 +98,24 @@ void acceleration (std::span<const index> idx, const double3 x[], const double m
         double factori = m[i]*invfact;
         double factorj = m[j]*invfact;
 
-        // Critical section (depending on subdivision)
-        // XXX: latency hiding / reduce contention: store results as temporaries
-        a[i][0] += factorj*d0;
-        a[i][1] += factorj*d1;
-        a[i][2] += factorj*d2;
-        a[j][0] -= factori*d0;
-        a[j][1] -= factori*d1;
-        a[j][2] -= factori*d2;
+        // Store results as temporaries to reduce contention (critial section)
+        a_local[i][0] += factorj*d0;
+        a_local[i][1] += factorj*d1;
+        a_local[i][2] += factorj*d2;
+        a_local[j][0] -= factori*d0;
+        a_local[j][1] -= factori*d1;
+        a_local[j][2] -= factori*d2;
     }
+    // Update all indices that were updated in this thread
+    std::unique_lock<std::mutex> lx{px};
+    for (int i = 0; i < n; ++i)
+    {
+        a[i][0] += a_local[i][0];
+        a[i][1] += a_local[i][0];
+        a[i][2] += a_local[i][0];
+    }
+    af.clear();
+    free(a_local);
 }
 
 /** \brief do one time step with leapfrog
@@ -166,7 +159,7 @@ void leapfrog (int rank, const index_v& idx, int n, double dt,
     // compute new acceleration: n*(n-1)*13 flops
     // subdivision of index space {(i, j) : j>i}
     std::span<const index> idx_local(idx.begin()+N_begin, idx.begin()+N_end);
-    acceleration(idx_local, x, m, a);
+    acceleration(idx_local, x, n, m, a);
 
     // update velocity: 6n flops
     // subdivided evenly between threads
@@ -194,7 +187,7 @@ void do_work(int rank, int timesteps, int n, int k, int mod,
     {
         leapfrog(rank, idx, n, dt, x, v, m, a);
         t += dt;
-        barrier(rank); // finish writing x, v, a
+        barrier(rank); // finish writing x, v, a for next timestep
 
         if (rank == 0 && k%mod==0)
         {
