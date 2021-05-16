@@ -82,7 +82,8 @@ auto upper_triag_index(int n)
 void acceleration (std::span<const index> idx, const double3 x[], int n, const double m[], double3 a[])
 {
     // local view on a (avoid locks inside a loop)
-    double3* a_local = static_cast<double3*>(calloc(n, sizeof(double3))); // zero-initialized
+    std::vector<std::array<double, 4> > a_local(n);
+    //double3* a_local = static_cast<double3*>(calloc(n, sizeof(double3))); // zero-initialized
 
     for (size_t k = 0; k < idx.size(); ++k)
     {
@@ -99,6 +100,7 @@ void acceleration (std::span<const index> idx, const double3 x[], int n, const d
         double factorj = m[j]*invfact;
 
         // Store results as temporaries to reduce contention (critial section)
+        //std::unique_lock<std::mutex> lx{px};
         a_local[i][0] += factorj*d0;
         a_local[i][1] += factorj*d1;
         a_local[i][2] += factorj*d2;
@@ -107,14 +109,15 @@ void acceleration (std::span<const index> idx, const double3 x[], int n, const d
         a_local[j][2] -= factori*d2;
     }
     // Update all indices that were updated in this thread
+    // Indices that were not updated are zero-additions (calloc)
     std::unique_lock<std::mutex> lx{px};
     for (int i = 0; i < n; ++i)
     {
         a[i][0] += a_local[i][0];
-        a[i][1] += a_local[i][0];
-        a[i][2] += a_local[i][0];
+        a[i][1] += a_local[i][1];
+        a[i][2] += a_local[i][2];
     }
-    free(a_local);
+//    free(a_local);
 }
 
 /** \brief do one time step with leapfrog
@@ -162,6 +165,7 @@ void leapfrog (int rank, const index_v& idx, int n, double dt,
 
     // update velocity: 6n flops
     // subdivided evenly between threads
+    barrier(rank);
     for (int i = i_begin; i < i_end; i++)
     {
         v[i][0] += dt*a[i][0];

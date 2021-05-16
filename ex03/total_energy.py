@@ -9,8 +9,8 @@ def potential_energy(mass, x0, x1, x2, G=1.0):
     x2_i, x2_j = np.meshgrid(x2, x2)
     m_i, m_j = np.meshgrid(mass, mass)
 
-    dist = np.sqrt((x0_j - x0_i)**2 
-                 + (x1_j - x1_i)**2 
+    dist = np.sqrt((x0_j - x0_i)**2
+                 + (x1_j - x1_i)**2
                  + (x2_j - x2_i)**2)
     mask = dist > 0 # dist == 0 iff i == j
     return -1/2 * G * np.sum(m_j[mask] * m_i[mask] / dist[mask])
@@ -22,11 +22,11 @@ def kinetic_energy(mass, v0, v1, v2):
 
 
 def main():
-    time_steps = range(0, 10) # test_data_points_%d.csv
+    time_steps = range(0, 20) # test_data_points_%d.csv
     G = 1.0 # value for gamma
     E_pot_a = np.zeros(len(time_steps))
     E_kin_a = np.zeros(len(time_steps))
-    basename = 'test_threaded' # XXX: take basename from command line
+    basename = 'test' # XXX: take basename from command line
 
     for t in time_steps:
         basevtk = LegacyVTKReader(FileNames=['vtk/{}_{:06d}.vtk'.format(basename, t)])
