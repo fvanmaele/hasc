@@ -34,7 +34,7 @@ Performance was similar in both cases.
 
 We used the following approach, resulting in a performance gain of `~4x` for 4 threads.
 
-* Acceleration: distribute the index space `{(i,j) : j > i}` for `0 <= i < n` evenly between threads.
+* Acceleration: distribute the index space `{(i,j) : j > i}` for `0 <= i < n` evenly between threads. This was done by storing all indices in a contiguous array (simple implementation but additional storage space).
 * Velocity, position: distribute the index space `{i | 0 <= i < n}` evenly between threads.
 * Use a barrier (cf. `barrier.cc`) after computing each time step to handle data dependencies.
 
