@@ -57,7 +57,7 @@ std::unique_lock<std::mutex> lx{px};
 for (int i = 0; i < n; ++i)
 {
     a[i][0] += a_local[i][0];
-    a[i][1] += a_local[i][0];
-    a[i][2] += a_local[i][0];
+    a[i][1] += a_local[i][1];
+    a[i][2] += a_local[i][2];
 }
 ```
