@@ -12,44 +12,66 @@ find_package(vectorclass REQUIRED)
 # Define optimization levels
 set(OPT_VEC_REPORT ON)
 set(OPT_FAST_MATH ON)
+set(OPT_TSAN OFF)
+set(OPT_ASAN OFF)
 
 # Vectorization reports
 if (OPT_VEC_REPORT)
-        if (MSVC)
+    if (MSVC)
         add_compile_options(
-                /Qvec-report:1
-        )
-        elseif(CMAKE_COMPILER_IS_GNUCXX)
+            /Qvec-report:1
+            )
+    elseif(CMAKE_COMPILER_IS_GNUCXX)
         add_compile_options(
-                -fopt-info-vec-all
-        )
-        elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+            -fopt-info-vec-all
+            )
+    elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
         add_compile_options(
-                -Rpass=loop-vectorize
-        )
-        endif()
+            -Rpass=loop-vectorize
+            )
+    endif()
 endif()
 
 if (OPT_FAST_MATH)
-        if (MSVC)
+    if (MSVC)
         add_compile_options(
-                /fp:fast
-        )
-        elseif(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+            /fp:fast
+            )
+    elseif(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
         add_compile_options(
-                -ffast-math
-        )
-        endif()
+            -ffast-math
+            )
+    endif()
+endif()
+
+# ThreadSanitizer
+if (OPT_TSAN)
+    if (CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+        add_compile_options(-fsanitize=thread -fno-omit-frame-pointer)
+        add_link_options(-fsanitize=thread)
+    else()
+        message("thread sanitizer not supported for this compiler")
+    endif()
+endif()
+
+# AddressSanitizer
+if (OPT_ASAN)
+    if (CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+        add_compile_options(-fsanitize=address -fno-omit-frame-pointer)
+        add_link_options(-fsanitize=address)
+    else()
+        message("address sanitizer not supported for this compiler")
+    endif()
 endif()
 
 # Set optimization flags
 if (MSVC)
-        add_compile_options(
-                /W3 /arch:AVX
+    add_compile_options(
+        /W3 /arch:AVX
         )
 elseif(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-        add_compile_options(
-                -Wall -Wextra -Wpedantic -march=native -funroll-loops
+    add_compile_options(
+        -Wall -Wextra -Wpedantic -march=native -funroll-loops
         )
 endif()
 
