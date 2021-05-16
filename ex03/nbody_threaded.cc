@@ -114,7 +114,6 @@ void acceleration (std::span<const index> idx, const double3 x[], int n, const d
         a[i][1] += a_local[i][0];
         a[i][2] += a_local[i][0];
     }
-    af.clear();
     free(a_local);
 }
 
