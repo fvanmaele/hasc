@@ -23,7 +23,7 @@ const double G = 1.0;
 const double epsilon2 = 1E-10;
 
 // helper variables for threads
-const int P = 1; // XXX: fixed number of threads
+const int P = 4; // XXX: fixed number of threads
 int count = 0; // count number of threads that arrived at the barrier
 
 std::vector<int> flag(P, 0); // flag indicating waiting thread
@@ -159,7 +159,9 @@ void leapfrog (int rank, const index_v& idx, int n, double dt,
     {
         a[i][0] = a[i][1] = a[i][2] = 0.0;
     }
-    //barrier(rank);
+    // required because the subdivision in acceleration is not divided evenly
+    // between i, but between i and j (unlike the above)
+    barrier(rank);
 
     // compute new acceleration: n*(n-1)*13 flops
     // subdivision of index space {(i, j) : j>i}
@@ -298,10 +300,13 @@ int main (int argc, char** argv)
     // leapfrog (int n, double dt, double3 x[], double3 v[], const double m[], double3 a[])
     // do time steps
     std::vector<std::thread> th;
+    th.reserve(P);
     for (int i = 0; i < P; ++i) {
-        th.push_back(std::thread{do_work, 0, timesteps, n, k, mod, t,
+        th.push_back(std::thread{do_work, i, timesteps, n, k, mod, t,
                                  dt, m, x, v, a, name, basename, file});
     }
-    th[0].join();
+    for (int i = 0; i < P; ++i) {
+        th[i].join();
+    }
     return 0;
 }
