@@ -1,0 +1,4 @@
+#+STARTUP: indent logdone
+#+AUTHOR: Ferdinand Vanmaele
+#+TITLE: N-Body problem
+

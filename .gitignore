@@ -1,5 +1,9 @@
-build/
+build*/
 .vscode/
 *.o
 *.exe
 *.ipynb
+vtk/
+csv/
+__pycache__/
+CMakeLists.txt.user
