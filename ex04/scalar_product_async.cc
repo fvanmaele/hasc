@@ -1,57 +1,188 @@
-#include <iostream>
-
+#include <benchmark/benchmark.h>
 #include "scalar_product_async.hh"
-#include "time_experiment.hh"
 
-template <class T>
-void doNotOptimizeAway(T&& datum) {
-    asm volatile("" : "+r" (datum));
-}
-
-template <typename Callable>
-class Experiment
-{
-private:
-    const NumberType* x;
-    const NumberType* y;
-    Callable sp;
-    size_t n;
-
-public:
-    Experiment(const NumberType* x_, const NumberType* y_,
-               size_t n_max_, Callable sp_) :
-        x(x_), y(y_), sp(sp_), n(n_max_)
-    {
-        assert(x.size() == y.size());
-    }
-    void run() const {
-        doNotOptimizeAway(sp(x, y, n));
-    }
-    double operations() const {
-        return 2.0*n;
-    }
-};
-
-int main() {
-    std::vector<size_t> sizes{};
-    const size_t n_max = 8<<26;
-    const size_t n_min = 8<<3;
-    for (size_t n = n_min; n <= n_max; n*=8) {
-        sizes.push_back(n);
-    }
-    std::vector<NumberType> x(n_max);
-    std::vector<NumberType> y(n_max);
+static void BM_scalar_product_serial(benchmark::State& state) {
+    // Perform setup here
+    ptrdiff_t N = state.range(0);
+    std::vector<NumberType> x(N);
+    std::vector<NumberType> y(N);
     sp_init(x, y, -10, 10);
-    std::cout << "N,sp_seq,sp_unseq,sp_par,sp_par_unseq,sp_async,sp_async_unseq,sp_packaged_task,sp_openmp,sp_tbb\n";
-    for (auto&& i : sizes) {
-        printf("%zu,", i);
-        auto e = Experiment(x.data(), y.data(), i, sp_async<4>);
-        auto d = time_experiment(e);
-        double flops = d.first*e.operations()/d.second*1e6/1e9;
-        std::cout << "n=" << i << " took " << d.second << " us for " << d.first << " repetitions"
-                  << " " << flops << " Gflops/s"
-                  << " " << flops*8 << " GByte/s"
-                  << std::endl;
+
+    for (auto _ : state) {
+        benchmark::DoNotOptimize(sp_seq(x, y));
     }
-    return 0;
 }
+static void BM_scalar_product_policy_unseq(benchmark::State& state) {
+    // Perform setup here
+    ptrdiff_t N = state.range(0);
+    std::vector<NumberType> x(N);
+    std::vector<NumberType> y(N);
+    sp_init(x, y, -10, 10);
+
+    for (auto _ : state) {
+        benchmark::DoNotOptimize(sp_unseq(x, y));
+    }
+}
+static void BM_scalar_product_policy_par(benchmark::State& state) {
+    // Perform setup here
+    ptrdiff_t N = state.range(0);
+    std::vector<NumberType> x(N);
+    std::vector<NumberType> y(N);
+    sp_init(x, y, -10, 10);
+
+    for (auto _ : state) {
+        benchmark::DoNotOptimize(sp_par(x, y));
+    }
+}
+static void BM_scalar_product_policy_par_unseq(benchmark::State& state) {
+    // Perform setup here
+    ptrdiff_t N = state.range(0);
+    std::vector<NumberType> x(N);
+    std::vector<NumberType> y(N);
+    sp_init(x, y, -10, 10);
+
+    for (auto _ : state) {
+        benchmark::DoNotOptimize(sp_par_unseq(x, y));
+    }
+}
+static void BM_scalar_product_async_2(benchmark::State& state) {
+    // Perform setup here
+    ptrdiff_t N = state.range(0);
+    std::vector<NumberType> x(N);
+    std::vector<NumberType> y(N);
+    sp_init(x, y, -10, 10);
+
+    for (auto _ : state) {
+        benchmark::DoNotOptimize(sp_async<2>(x, y));
+    }
+}
+static void BM_scalar_product_async_4(benchmark::State& state) {
+    // Perform setup here
+    ptrdiff_t N = state.range(0);
+    std::vector<NumberType> x(N);
+    std::vector<NumberType> y(N);
+    sp_init(x, y, -10, 10);
+
+    for (auto _ : state) {
+        benchmark::DoNotOptimize(sp_async<4>(x, y));
+    }
+}
+static void BM_scalar_product_async_8(benchmark::State& state) {
+    // Perform setup here
+    ptrdiff_t N = state.range(0);
+    std::vector<NumberType> x(N);
+    std::vector<NumberType> y(N);
+    sp_init(x, y, -10, 10);
+
+    for (auto _ : state) {
+        benchmark::DoNotOptimize(sp_async<8>(x, y));
+    }
+}
+static void BM_scalar_product_async_unseq_2(benchmark::State& state) {
+    // Perform setup here
+    ptrdiff_t N = state.range(0);
+    std::vector<NumberType> x(N);
+    std::vector<NumberType> y(N);
+    sp_init(x, y, -10, 10);
+
+    for (auto _ : state) {
+        benchmark::DoNotOptimize(sp_async_unseq<2>(x, y));
+    }
+}
+static void BM_scalar_product_async_unseq_4(benchmark::State& state) {
+    // Perform setup here
+    ptrdiff_t N = state.range(0);
+    std::vector<NumberType> x(N);
+    std::vector<NumberType> y(N);
+    sp_init(x, y, -10, 10);
+
+    for (auto _ : state) {
+        benchmark::DoNotOptimize(sp_async_unseq<4>(x, y));
+    }
+}
+static void BM_scalar_product_async_unseq_8(benchmark::State& state) {
+    // Perform setup here
+    ptrdiff_t N = state.range(0);
+    std::vector<NumberType> x(N);
+    std::vector<NumberType> y(N);
+    sp_init(x, y, -10, 10);
+
+    for (auto _ : state) {
+        benchmark::DoNotOptimize(sp_async_unseq<8>(x, y));
+    }
+}
+static void BM_scalar_product_packaged_task_2(benchmark::State& state) {
+    // Perform setup here
+    ptrdiff_t N = state.range(0);
+    std::vector<NumberType> x(N);
+    std::vector<NumberType> y(N);
+    sp_init(x, y, -10, 10);
+
+    for (auto _ : state) {
+        benchmark::DoNotOptimize(sp_packaged_task<2>(x, y));
+    }
+}
+static void BM_scalar_product_packaged_task_4(benchmark::State& state) {
+    // Perform setup here
+    ptrdiff_t N = state.range(0);
+    std::vector<NumberType> x(N);
+    std::vector<NumberType> y(N);
+    sp_init(x, y, -10, 10);
+
+    for (auto _ : state) {
+        benchmark::DoNotOptimize(sp_packaged_task<4>(x, y));
+    }
+}
+static void BM_scalar_product_packaged_task_8(benchmark::State& state) {
+    // Perform setup here
+    ptrdiff_t N = state.range(0);
+    std::vector<NumberType> x(N);
+    std::vector<NumberType> y(N);
+    sp_init(x, y, -10, 10);
+
+    for (auto _ : state) {
+        benchmark::DoNotOptimize(sp_packaged_task<8>(x, y));
+    }
+}
+static void BM_scalar_product_openmp(benchmark::State& state) {
+    // Perform setup here
+    ptrdiff_t N = state.range(0);
+    std::vector<NumberType> x(N);
+    std::vector<NumberType> y(N);
+    sp_init(x, y, -10, 10);
+
+    for (auto _ : state) {
+        benchmark::DoNotOptimize(sp_openmp(x, y));
+    }
+}
+static void BM_scalar_product_tbb(benchmark::State& state) {
+    // Perform setup here
+    ptrdiff_t N = state.range(0);
+    std::vector<NumberType> x(N);
+    std::vector<NumberType> y(N);
+    sp_init(x, y, -10, 10);
+
+    for (auto _ : state) {
+        benchmark::DoNotOptimize(sp_tbb(x, y));
+    }
+}
+
+// Register the function as a benchmark
+// XXX: this always gets the wrong results for functions using std::async and std::packaged_task.
+BENCHMARK(BM_scalar_product_serial)->Range(8<<3, 8<<22)->Unit(benchmark::kMillisecond)->UseRealTime();
+BENCHMARK(BM_scalar_product_policy_unseq)->Range(8<<3, 8<<22)->Unit(benchmark::kMillisecond)->UseRealTime();
+BENCHMARK(BM_scalar_product_policy_par)->Range(8<<3, 8<<22)->Unit(benchmark::kMillisecond)->UseRealTime();
+BENCHMARK(BM_scalar_product_policy_par_unseq)->Range(8<<3, 8<<22)->Unit(benchmark::kMillisecond)->UseRealTime();
+BENCHMARK(BM_scalar_product_async_2)->Range(8<<3, 8<<22)->Unit(benchmark::kMillisecond)->UseRealTime();
+BENCHMARK(BM_scalar_product_async_4)->Range(8<<3, 8<<22)->Unit(benchmark::kMillisecond)->UseRealTime();
+BENCHMARK(BM_scalar_product_async_8)->Range(8<<3, 8<<22)->Unit(benchmark::kMillisecond)->UseRealTime();
+BENCHMARK(BM_scalar_product_async_unseq_2)->Range(8<<3, 8<<22)->Unit(benchmark::kMillisecond)->UseRealTime();
+BENCHMARK(BM_scalar_product_async_unseq_4)->Range(8<<3, 8<<22)->Unit(benchmark::kMillisecond)->UseRealTime();
+BENCHMARK(BM_scalar_product_async_unseq_8)->Range(8<<3, 8<<22)->Unit(benchmark::kMillisecond)->UseRealTime();
+BENCHMARK(BM_scalar_product_packaged_task_2)->Range(8<<3, 8<<22)->Unit(benchmark::kMillisecond)->UseRealTime();
+BENCHMARK(BM_scalar_product_packaged_task_4)->Range(8<<3, 8<<22)->Unit(benchmark::kMillisecond)->UseRealTime();
+BENCHMARK(BM_scalar_product_packaged_task_8)->Range(8<<3, 8<<22)->Unit(benchmark::kMillisecond)->UseRealTime();
+BENCHMARK(BM_scalar_product_openmp)->Range(8<<3, 8<<25)->Unit(benchmark::kMillisecond)->UseRealTime();
+BENCHMARK(BM_scalar_product_tbb)->Range(8<<3, 8<<25)->Unit(benchmark::kMillisecond)->UseRealTime();
+
+BENCHMARK_MAIN();

@@ -13,7 +13,7 @@ find_package(OpenMP REQUIRED)
 
 # Define optimization levels
 set(OPT_VEC_REPORT OFF)
-set(OPT_FAST_MATH ON)
+set(OPT_FAST_MATH OFF)
 set(OPT_TSAN OFF)
 set(OPT_ASAN OFF)
 
@@ -73,7 +73,7 @@ if (MSVC)
         )
 elseif(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
     add_compile_options(
-        -Wall -Wextra -Wpedantic -march=native -funroll-loops
+        -Wall -Wextra -Wpedantic -march=native
         )
 endif()
 
@@ -87,8 +87,8 @@ target_link_libraries(async INTERFACE Threads::Threads TBB::tbb OpenMP::OpenMP_C
 add_executable(tree_barrier tree_barrier.cc Barrier.hh)
 target_link_libraries(tree_barrier Threads::Threads)
 
-add_executable(scalar_product_async_bm scalar_product_async_bm.cc)
-target_link_libraries(scalar_product_async_bm benchmark::benchmark async)
+add_executable(scalar_product_async scalar_product_async.cc)
+target_link_libraries(scalar_product_async benchmark::benchmark async)
 
-add_executable(scalar_product_async scalar_product_async.cc time_experiment.hh)
-target_link_libraries(scalar_product_async async)
+add_executable(scalar_product_async_te scalar_product_async_te.cc time_experiment.hh)
+target_link_libraries(scalar_product_async_te async)
