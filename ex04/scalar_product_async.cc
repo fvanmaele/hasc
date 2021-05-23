@@ -1,8 +1,57 @@
-#include <future>
-#include <thread>
-#include <algorithm>
-#include <benchmark/benchmark.h>
+#include <iostream>
+
+#include "scalar_product_async.hh"
+#include "time_experiment.hh"
+
+template <class T>
+void doNotOptimizeAway(T&& datum) {
+    asm volatile("" : "+r" (datum));
+}
+
+template <typename Callable>
+class Experiment
+{
+private:
+    const NumberType* x;
+    const NumberType* y;
+    Callable sp;
+    size_t n;
+
+public:
+    Experiment(const NumberType* x_, const NumberType* y_,
+               size_t n_max_, Callable sp_) :
+        x(x_), y(y_), sp(sp_), n(n_max_)
+    {
+        assert(x.size() == y.size());
+    }
+    void run() const {
+        doNotOptimizeAway(sp(x, y, n));
+    }
+    double operations() const {
+        return 2.0*n;
+    }
+};
 
 int main() {
+    std::vector<size_t> sizes{};
+    const size_t n_max = 8<<26;
+    const size_t n_min = 8<<3;
+    for (size_t n = n_min; n <= n_max; n*=8) {
+        sizes.push_back(n);
+    }
+    std::vector<NumberType> x(n_max);
+    std::vector<NumberType> y(n_max);
+    sp_init(x, y, -10, 10);
+    std::cout << "N,sp_seq,sp_unseq,sp_par,sp_par_unseq,sp_async,sp_async_unseq,sp_packaged_task,sp_openmp,sp_tbb\n";
+    for (auto&& i : sizes) {
+        printf("%zu,", i);
+        auto e = Experiment(x.data(), y.data(), i, sp_async<4>);
+        auto d = time_experiment(e);
+        double flops = d.first*e.operations()/d.second*1e6/1e9;
+        std::cout << "n=" << i << " took " << d.second << " us for " << d.first << " repetitions"
+                  << " " << flops << " Gflops/s"
+                  << " " << flops*8 << " GByte/s"
+                  << std::endl;
+    }
     return 0;
 }

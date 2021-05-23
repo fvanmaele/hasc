@@ -6,11 +6,13 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 # set(THREADS_PREFER_PTHREAD_FLAG ON)
 find_package(Threads REQUIRED)
 find_package(benchmark REQUIRED)
+find_package(TBB REQUIRED)
+find_package(OpenMP REQUIRED)
 #find_package(fmt CONFIG REQUIRED)
 #find_package(vectorclass REQUIRED)
 
 # Define optimization levels
-set(OPT_VEC_REPORT ON)
+set(OPT_VEC_REPORT OFF)
 set(OPT_FAST_MATH ON)
 set(OPT_TSAN OFF)
 set(OPT_ASAN OFF)
@@ -77,10 +79,16 @@ endif()
 
 #add_compile_definitions(NDEBUG)
 
-# Exercise 03
+# Exercise 04
+
+add_library(async INTERFACE scalar_product_async.hh)
+target_link_libraries(async INTERFACE Threads::Threads TBB::tbb OpenMP::OpenMP_CXX)
 
 add_executable(tree_barrier tree_barrier.cc Barrier.hh)
 target_link_libraries(tree_barrier Threads::Threads)
 
-add_executable(scalar_product_async scalar_product_async.cc)
-target_link_libraries(scalar_product_async Threads::Threads benchmark::benchmark)
+add_executable(scalar_product_async_bm scalar_product_async_bm.cc)
+target_link_libraries(scalar_product_async_bm benchmark::benchmark async)
+
+add_executable(scalar_product_async scalar_product_async.cc time_experiment.hh)
+target_link_libraries(scalar_product_async async)

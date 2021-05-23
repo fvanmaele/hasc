@@ -41,17 +41,6 @@ void acceleration_avx (int n,  const double3 x[], const double m[], double3 a[])
       Vec4d factori(m[i]*invfact);
       Vec4d factorj(m[j]*invfact);
 
-//      Vec4d d_sq1 = permute4<2, 0, 1, 3>(d_sq);
-//      Vec4d d_sq2 = permute4<1, 2, 0, 3>(d_sq);
-//      Vec4d eps(epsilon2);
-//      Vec4d r2 = d_sq + d_sq1 + d_sq2 + eps;
-//      Vec4d r = sqrt(r2);
-//      Vec4d invfact = G/(r*r2);
-//      Vec4d mi(m[i]);
-//      Vec4d mj(m[j]);
-//      Vec4d factori = mi * invfact;
-//      Vec4d factorj = mj * invfact;
-
       Vec4d ai;
       Vec4d aj;
       ai.load(&a[i][0]);
