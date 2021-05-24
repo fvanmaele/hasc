@@ -60,10 +60,9 @@ ReduceType sp_async(std::span<NumberType> x, std::span<NumberType> y)
         size_t ibegin = N*rank/P;
         size_t iend = (N+1)*rank/P;
 
-        auto fut = std::async(sp_seq, // default launch policy
-                              std::span{x.begin()+ibegin, x.begin()+iend},
-                              std::span{y.begin()+ibegin, y.begin()+iend});
-        futures[rank] = std::move(fut);
+        futures[rank] = std::async(sp_seq, // default launch policy
+                                   std::span{x.begin()+ibegin, x.begin()+iend},
+                                   std::span{y.begin()+ibegin, y.begin()+iend});
     }
     for (int rank = 0; rank < P; ++rank) {
         psums[rank] = futures[rank].get();
@@ -76,7 +75,6 @@ ReduceType sp_async_unseq(std::span<NumberType> x, std::span<NumberType> y)
 {
     assert(x.size() % P == 0);
     assert(x.size() == y.size());
-
     std::vector<std::future<ReduceType>> futures(P);
     std::vector<ReduceType> psums(P);
 
@@ -86,15 +84,15 @@ ReduceType sp_async_unseq(std::span<NumberType> x, std::span<NumberType> y)
         size_t ibegin = N*rank/P;
         size_t iend = (N+1)*rank/P;
 
-        auto fut = std::async(sp_unseq, // default launch policy
-                              std::span{x.begin()+ibegin, x.begin()+iend},
-                              std::span{y.begin()+ibegin, y.begin()+iend});
-        futures[rank] = std::move(fut);
+        futures[rank] = std::async(sp_unseq, // default launch policy
+                                   std::span{x.begin()+ibegin, x.begin()+iend},
+                                   std::span{y.begin()+ibegin, y.begin()+iend});
     }
     for (int rank = 0; rank < P; ++rank) {
         psums[rank] = futures[rank].get();
     }
-    return std::reduce(std::execution::unseq, psums.begin(), psums.end(), ReduceType(0));
+    return std::reduce(std::execution::unseq,
+                       psums.begin(), psums.end(), ReduceType(0));
 }
 
 template <int P>
@@ -102,26 +100,22 @@ ReduceType sp_packaged_task(std::span<NumberType> x, std::span<NumberType> y)
 {
     assert(x.size() % P == 0);
     assert(x.size() == y.size());
-
     std::vector<std::thread> threads(P);
     std::vector<std::future<ReduceType>> futures(P);
     std::vector<ReduceType> psums(P);
 
     size_t N = std::ssize(x);
+    using TaskType = decltype(sp_seq);
     for (int rank = 0; rank < P; ++rank) {
-        // build chunk
-        size_t ibegin = N*rank/P;
-        size_t iend = (N+1)*rank/P;
-
-        using TaskType = decltype(sp_seq);
         std::packaged_task<TaskType> pt{sp_seq};
-        std::future<ReduceType> fut{pt.get_future()};
+        futures[rank] = pt.get_future();
 
         // explicitly launch thread
+        const size_t ibegin = N*rank/P;
+        const size_t iend = (N+1)*rank/P;
         threads[rank] = std::thread{std::move(pt),
                                     std::span{x.begin()+ibegin, x.begin()+iend},
                                     std::span{y.begin()+ibegin, y.begin()+iend}};
-        futures[rank] = std::move(fut);
     }
     for (int rank = 0; rank < P; ++rank) {
         psums[rank] = futures[rank].get();
