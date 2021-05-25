@@ -54,11 +54,11 @@ ReduceType sp_async(std::span<NumberType> x, std::span<NumberType> y)
     std::vector<std::future<ReduceType>> futures(P);
     std::vector<ReduceType> psums(P);
 
-    size_t N = x.size();
+    const size_t N = x.size();
     for (int rank = 0; rank < P; ++rank) {
         // build chunk
-        size_t ibegin = N*rank/P;
-        size_t iend = (N+1)*rank/P;
+        const size_t ibegin = N*rank/P;
+        const size_t iend = N*(rank+1)/P;
 
         futures[rank] = std::async(sp_seq, // default launch policy
                                    std::span{x.begin()+ibegin, x.begin()+iend},
@@ -78,11 +78,11 @@ ReduceType sp_async_unseq(std::span<NumberType> x, std::span<NumberType> y)
     std::vector<std::future<ReduceType>> futures(P);
     std::vector<ReduceType> psums(P);
 
-    size_t N = std::ssize(x);
+    const size_t N = std::ssize(x);
     for (int rank = 0; rank < P; ++rank) {
         // build chunk
-        size_t ibegin = N*rank/P;
-        size_t iend = (N+1)*rank/P;
+        const size_t ibegin = N*rank/P;
+        const size_t iend = N*(rank+1)/P;
 
         futures[rank] = std::async(sp_unseq, // default launch policy
                                    std::span{x.begin()+ibegin, x.begin()+iend},
@@ -104,7 +104,7 @@ ReduceType sp_packaged_task(std::span<NumberType> x, std::span<NumberType> y)
     std::vector<std::future<ReduceType>> futures(P);
     std::vector<ReduceType> psums(P);
 
-    size_t N = std::ssize(x);
+    const size_t N = std::ssize(x);
     using TaskType = decltype(sp_seq);
     for (int rank = 0; rank < P; ++rank) {
         std::packaged_task<TaskType> pt{sp_seq};
@@ -112,7 +112,7 @@ ReduceType sp_packaged_task(std::span<NumberType> x, std::span<NumberType> y)
 
         // explicitly launch thread
         const size_t ibegin = N*rank/P;
-        const size_t iend = (N+1)*rank/P;
+        const size_t iend = N*(rank+1)/P;
         threads[rank] = std::thread{std::move(pt),
                                     std::span{x.begin()+ibegin, x.begin()+iend},
                                     std::span{y.begin()+ibegin, y.begin()+iend}};
@@ -129,10 +129,10 @@ ReduceType sp_packaged_task(std::span<NumberType> x, std::span<NumberType> y)
 ReduceType sp_openmp(std::span<NumberType> x, std::span<NumberType> y)
 {
     ReduceType sum = 0;
-    size_t N = x.size();
+    ptrdiff_t N = std::ssize(x);
 
 #pragma omp parallel for reduction(+:sum)
-    for (size_t i = 0; i < N; ++i) {
+    for (ptrdiff_t i = 0; i < N; ++i) {
         sum += x[i] * y[i];
     }
     return sum;

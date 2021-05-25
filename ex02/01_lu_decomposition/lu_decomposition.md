@@ -20,7 +20,6 @@ A:  Computing an LU decomposition with standard Gauss elimination requires $2/3 
 
     $P(I) = \min(P_m, IM_m) = \min(112, 1/12 n \cdot 25.6) \approx \min(112, 2.133n) \text{ Gflops\textbackslash sec}$
 
-
 ## LU decomposition with blocking
 
 Now we want to analyze the LU decomposition with blocking, similar to the matrix multiplication example. Make sure you know what is going on and that you could explain the idea with a quick sketch.
@@ -28,6 +27,7 @@ Now we want to analyze the LU decomposition with blocking, similar to the matrix
 ## Computational intensity - blocking
 
 **Q: What is the computational intensity for the blocked version?**
+
 
 ## Band matrix
 

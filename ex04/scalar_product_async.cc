@@ -117,22 +117,22 @@ static void BM_scalar_product_tbb(benchmark::State& state) {
 
 // Register the function as a benchmark
 // XXX: this always gets the wrong results for functions using std::async and std::packaged_task.
-//BENCHMARK(BM_scalar_product_serial)->Range(8<<3, 8<<25)->Unit(benchmark::kMillisecond);
-//BENCHMARK(BM_scalar_product_policy_unseq)->Range(8<<3, 8<<25)->Unit(benchmark::kMillisecond)->UseRealTime();
-//BENCHMARK(BM_scalar_product_policy_par)->Range(8<<3, 8<<25)->Unit(benchmark::kMillisecond)->UseRealTime();
-//BENCHMARK(BM_scalar_product_policy_par_unseq)->Range(8<<3, 8<<25)->Unit(benchmark::kMillisecond)->UseRealTime();
-BENCHMARK_TEMPLATE(BM_scalar_product_async, 2)->Range(8<<3, 8<<25)->Unit(benchmark::kMillisecond)->UseManualTime();
-//BENCHMARK_TEMPLATE(BM_scalar_product_async, 4)->Range(8<<3, 8<<25)->Unit(benchmark::kMillisecond)->UseRealTime();
-//BENCHMARK_TEMPLATE(BM_scalar_product_async, 8)->Range(8<<3, 8<<25)->Unit(benchmark::kMillisecond)->UseRealTime();
-//BENCHMARK_TEMPLATE(BM_scalar_product_async_unseq, 2)->Range(8<<3, 8<<25)->Unit(benchmark::kMillisecond)->UseRealTime();
-//BENCHMARK_TEMPLATE(BM_scalar_product_async_unseq, 4)->Range(8<<3, 8<<25)->Unit(benchmark::kMillisecond)->UseRealTime();
-//BENCHMARK_TEMPLATE(BM_scalar_product_async_unseq, 8)->Range(8<<3, 8<<25)->Unit(benchmark::kMillisecond)->UseRealTime();
-//BENCHMARK_TEMPLATE(BM_scalar_product_packaged_task, 2)->Range(8<<3, 8<<25)->Unit(benchmark::kMillisecond)->UseRealTime();
-//BENCHMARK_TEMPLATE(BM_scalar_product_packaged_task, 4)->Range(8<<3, 8<<25)->Unit(benchmark::kMillisecond)->UseRealTime();
-//BENCHMARK_TEMPLATE(BM_scalar_product_packaged_task, 8)->Range(8<<3, 8<<25)->Unit(benchmark::kMillisecond)->UseRealTime();
-//BENCHMARK(BM_scalar_product_openmp)->Range(8<<3, 8<<25)->Unit(benchmark::kMillisecond)->UseRealTime();;
-//BENCHMARK_TEMPLATE(BM_scalar_product_tbb, 2)->Range(8<<3, 8<<25)->Unit(benchmark::kMillisecond)->UseRealTime();;
-//BENCHMARK_TEMPLATE(BM_scalar_product_tbb, 4)->Range(8<<3, 8<<25)->Unit(benchmark::kMillisecond)->UseRealTime();;
-//BENCHMARK_TEMPLATE(BM_scalar_product_tbb, 8)->Range(8<<3, 8<<25)->Unit(benchmark::kMillisecond)->UseRealTime();;
+BENCHMARK(BM_scalar_product_serial)->Range(8<<3, 8<<25)->Unit(benchmark::kMillisecond);
+BENCHMARK(BM_scalar_product_policy_unseq)->Range(8<<3, 8<<25)->Unit(benchmark::kMillisecond)->UseRealTime();
+BENCHMARK(BM_scalar_product_policy_par)->Range(8<<3, 8<<25)->Unit(benchmark::kMillisecond)->UseRealTime();
+BENCHMARK(BM_scalar_product_policy_par_unseq)->Range(8<<3, 8<<25)->Unit(benchmark::kMillisecond)->UseRealTime();
+BENCHMARK_TEMPLATE(BM_scalar_product_async, 2)->Range(8<<3, 8<<25)->Unit(benchmark::kMillisecond)->UseRealTime();
+BENCHMARK_TEMPLATE(BM_scalar_product_async, 4)->Range(8<<3, 8<<25)->Unit(benchmark::kMillisecond)->UseRealTime();
+BENCHMARK_TEMPLATE(BM_scalar_product_async, 8)->Range(8<<3, 8<<25)->Unit(benchmark::kMillisecond)->UseRealTime();
+BENCHMARK_TEMPLATE(BM_scalar_product_async_unseq, 2)->Range(8<<3, 8<<25)->Unit(benchmark::kMillisecond)->UseRealTime();
+BENCHMARK_TEMPLATE(BM_scalar_product_async_unseq, 4)->Range(8<<3, 8<<25)->Unit(benchmark::kMillisecond)->UseRealTime();
+BENCHMARK_TEMPLATE(BM_scalar_product_async_unseq, 8)->Range(8<<3, 8<<25)->Unit(benchmark::kMillisecond)->UseRealTime();
+BENCHMARK_TEMPLATE(BM_scalar_product_packaged_task, 2)->Range(8<<3, 8<<25)->Unit(benchmark::kMillisecond)->UseRealTime();
+BENCHMARK_TEMPLATE(BM_scalar_product_packaged_task, 4)->Range(8<<3, 8<<25)->Unit(benchmark::kMillisecond)->UseRealTime();
+BENCHMARK_TEMPLATE(BM_scalar_product_packaged_task, 8)->Range(8<<3, 8<<25)->Unit(benchmark::kMillisecond)->UseRealTime();
+BENCHMARK(BM_scalar_product_openmp)->Range(8<<3, 8<<25)->Unit(benchmark::kMillisecond)->UseRealTime();;
+BENCHMARK_TEMPLATE(BM_scalar_product_tbb, 2)->Range(8<<3, 8<<25)->Unit(benchmark::kMillisecond)->UseRealTime();;
+BENCHMARK_TEMPLATE(BM_scalar_product_tbb, 4)->Range(8<<3, 8<<25)->Unit(benchmark::kMillisecond)->UseRealTime();;
+BENCHMARK_TEMPLATE(BM_scalar_product_tbb, 8)->Range(8<<3, 8<<25)->Unit(benchmark::kMillisecond)->UseRealTime();;
 
 BENCHMARK_MAIN();

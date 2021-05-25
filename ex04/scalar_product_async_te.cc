@@ -3,10 +3,12 @@
 #include "scalar_product_async.hh"
 #include "time_experiment.hh"
 
+#ifndef _WIN32
 template <class T>
 void doNotOptimizeAway(T&& datum) {
     asm volatile("" : "+r" (datum));
 }
+#endif
 
 template <typename Callable>
 class Experiment
@@ -24,7 +26,11 @@ public:
         assert(x.size() == y.size());
     }
     void run() const {
+#ifdef _WIN32
+        throw std::invalid_argument("not implemented for win32");
+#else
         doNotOptimizeAway(sp(x, y));
+#endif
     }
     double operations() const {
         return 2.0*n;
