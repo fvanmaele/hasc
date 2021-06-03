@@ -92,6 +92,3 @@ target_link_libraries(scalar_product_async benchmark::benchmark async)
 
 add_executable(scalar_product_async_te scalar_product_async_te.cc time_experiment.hh)
 target_link_libraries(scalar_product_async_te async)
-
-add_executable(bm_minimal_reproducer bm_minimal_reproducer.cc)
-target_link_libraries(bm_minimal_reproducer benchmark::benchmark Threads::Threads)

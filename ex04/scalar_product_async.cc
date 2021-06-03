@@ -1,6 +1,8 @@
 #include <benchmark/benchmark.h>
 #include <tbb/task_scheduler_init.h>
-
+#ifdef _OPENMP
+#include <omp.h>
+#endif
 #include "scalar_product_async.hh"
 
 static void BM_scalar_product_serial(benchmark::State& state) {
@@ -61,7 +63,6 @@ static void BM_scalar_product_async(benchmark::State& state) {
     }
 }
 
-
 template <int P>
 static void BM_scalar_product_async_unseq(benchmark::State& state) {
     // Perform setup here
@@ -88,13 +89,15 @@ static void BM_scalar_product_packaged_task(benchmark::State& state) {
     }
 }
 
-// Note: number and location of threads are controlled through environment variables
+template <int P = 0>
 static void BM_scalar_product_openmp(benchmark::State& state) {
     // Perform setup here
     ptrdiff_t N = state.range(0);
     std::vector<NumberType> x(N);
     std::vector<NumberType> y(N);
-    sp_init(x, y, -10, 10);
+    sp_init(x, y, -10, 10); // note: not NUMA-aware
+    if (P >= 1)
+        omp_set_num_threads(P);
 
     for (auto _ : state) {
         benchmark::DoNotOptimize(sp_openmp(x, y));
@@ -130,7 +133,10 @@ BENCHMARK_TEMPLATE(BM_scalar_product_async_unseq, 8)->Range(8<<3, 8<<25)->Unit(b
 BENCHMARK_TEMPLATE(BM_scalar_product_packaged_task, 2)->Range(8<<3, 8<<25)->Unit(benchmark::kMillisecond)->UseRealTime();
 BENCHMARK_TEMPLATE(BM_scalar_product_packaged_task, 4)->Range(8<<3, 8<<25)->Unit(benchmark::kMillisecond)->UseRealTime();
 BENCHMARK_TEMPLATE(BM_scalar_product_packaged_task, 8)->Range(8<<3, 8<<25)->Unit(benchmark::kMillisecond)->UseRealTime();
-BENCHMARK(BM_scalar_product_openmp)->Range(8<<3, 8<<25)->Unit(benchmark::kMillisecond)->UseRealTime();;
+BENCHMARK(BM_scalar_product_openmp)->Range(8<<3, 8<<25)->Unit(benchmark::kMillisecond)->UseRealTime();
+BENCHMARK_TEMPLATE(BM_scalar_product_openmp, 2)->Range(8<<3, 8<<25)->Unit(benchmark::kMillisecond)->UseRealTime();
+BENCHMARK_TEMPLATE(BM_scalar_product_openmp, 4)->Range(8<<3, 8<<25)->Unit(benchmark::kMillisecond)->UseRealTime();
+BENCHMARK_TEMPLATE(BM_scalar_product_openmp, 8)->Range(8<<3, 8<<25)->Unit(benchmark::kMillisecond)->UseRealTime();
 BENCHMARK_TEMPLATE(BM_scalar_product_tbb, 2)->Range(8<<3, 8<<25)->Unit(benchmark::kMillisecond)->UseRealTime();;
 BENCHMARK_TEMPLATE(BM_scalar_product_tbb, 4)->Range(8<<3, 8<<25)->Unit(benchmark::kMillisecond)->UseRealTime();;
 BENCHMARK_TEMPLATE(BM_scalar_product_tbb, 8)->Range(8<<3, 8<<25)->Unit(benchmark::kMillisecond)->UseRealTime();;
