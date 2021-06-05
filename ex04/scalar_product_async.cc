@@ -137,8 +137,8 @@ BENCHMARK(BM_scalar_product_openmp)->Range(8<<3, 8<<25)->Unit(benchmark::kMillis
 BENCHMARK_TEMPLATE(BM_scalar_product_openmp, 2)->Range(8<<3, 8<<25)->Unit(benchmark::kMillisecond)->UseRealTime();
 BENCHMARK_TEMPLATE(BM_scalar_product_openmp, 4)->Range(8<<3, 8<<25)->Unit(benchmark::kMillisecond)->UseRealTime();
 BENCHMARK_TEMPLATE(BM_scalar_product_openmp, 8)->Range(8<<3, 8<<25)->Unit(benchmark::kMillisecond)->UseRealTime();
-BENCHMARK_TEMPLATE(BM_scalar_product_tbb, 2)->Range(8<<3, 8<<25)->Unit(benchmark::kMillisecond)->UseRealTime();;
-BENCHMARK_TEMPLATE(BM_scalar_product_tbb, 4)->Range(8<<3, 8<<25)->Unit(benchmark::kMillisecond)->UseRealTime();;
-BENCHMARK_TEMPLATE(BM_scalar_product_tbb, 8)->Range(8<<3, 8<<25)->Unit(benchmark::kMillisecond)->UseRealTime();;
+BENCHMARK_TEMPLATE(BM_scalar_product_tbb, 2)->Range(8<<3, 8<<25)->Unit(benchmark::kMillisecond)->UseRealTime();
+BENCHMARK_TEMPLATE(BM_scalar_product_tbb, 4)->Range(8<<3, 8<<25)->Unit(benchmark::kMillisecond)->UseRealTime();
+BENCHMARK_TEMPLATE(BM_scalar_product_tbb, 8)->Range(8<<3, 8<<25)->Unit(benchmark::kMillisecond)->UseRealTime();
 
 BENCHMARK_MAIN();

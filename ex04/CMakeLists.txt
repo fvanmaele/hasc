@@ -88,7 +88,9 @@ add_executable(tree_barrier tree_barrier.cc Barrier.hh)
 target_link_libraries(tree_barrier Threads::Threads)
 
 add_executable(scalar_product_async scalar_product_async.cc)
-target_link_libraries(scalar_product_async benchmark::benchmark async)
+target_link_libraries(scalar_product_async
+    async benchmark::benchmark)
 
 add_executable(scalar_product_async_te scalar_product_async_te.cc time_experiment.hh)
-target_link_libraries(scalar_product_async_te async)
+target_link_libraries(scalar_product_async_te
+    async)
