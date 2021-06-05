@@ -3,8 +3,8 @@
 #include <utility>
 #include <algorithm>
 
-int jacobi_vanilla_kernel(int n, int iterations, double *__restrict__ uold,
-                          double *__restrict__ unew) {
+int jacobi_vanilla_kernel(int n, int iterations, double *__restrict uold,
+                          double *__restrict unew) {
   // do iterations
   for (int i = 0; i < iterations; i++) {
     for (int i1 = 1; i1 < n - 1; i1++)
@@ -20,8 +20,8 @@ int jacobi_vanilla_kernel(int n, int iterations, double *__restrict__ uold,
 }
 
 template <int B>
-void jacobi_blocked_kernel(int n, int iterations, double *__restrict__ uold,
-                           double *__restrict__ unew) {
+void jacobi_blocked_kernel(int n, int iterations, double *__restrict uold,
+                           double *__restrict unew) {
   int blocksB = ((n - 2) / B) * B;
   int remainderB = (n - 2) % B;
   // std::cout << "blocksB=" << blocksB << " remainderB=" << remainderB <<
@@ -54,8 +54,8 @@ void jacobi_blocked_kernel(int n, int iterations, double *__restrict__ uold,
 }
 
 template <int K>
-void jacobi_wave_kernel(int n, int iterations, double *__restrict__ uold,
-                        double *__restrict__ unew) {
+void jacobi_wave_kernel(int n, int iterations, double *__restrict uold,
+                        double *__restrict unew) {
   double *u[2];
   u[0] = uold;
   u[1] = unew;

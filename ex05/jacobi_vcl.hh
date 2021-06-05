@@ -4,8 +4,8 @@
 #include <algorithm>
 #include <vectorclass.h>
 
-void jacobi_vectorized_kernel(int n, int iterations, double *__restrict__ uold,
-                              double *__restrict__ unew) {
+void jacobi_vectorized_kernel(int n, int iterations, double *__restrict uold,
+                              double *__restrict unew) {
   int blocks4 = ((n - 2) / 4) * 4;
 
   Vec4d QUARTER = Vec4d(0.25);
@@ -40,8 +40,8 @@ void jacobi_vectorized_kernel(int n, int iterations, double *__restrict__ uold,
 }
 
 template <int K>
-void jacobi_vectorized_wave_kernel(int n, int iterations, double *__restrict__ uold,
-                                   double *__restrict__ unew) {
+void jacobi_vectorized_wave_kernel(int n, int iterations, double *__restrict uold,
+                                   double *__restrict unew) {
   double *u[2];
   u[0] = uold;
   u[1] = unew;
