@@ -1,11 +1,11 @@
-cmake_minimum_required (VERSION 3.17)
+cmake_minimum_required (VERSION 3.12)
 project(hasc)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # set(THREADS_PREFER_PTHREAD_FLAG ON)
 find_package(Threads REQUIRED)
-find_package(benchmark REQUIRED)
+find_package(benchmark CONFIG REQUIRED)
 #find_package(TBB REQUIRED)
 find_package(OpenMP REQUIRED)
 #find_package(fmt CONFIG REQUIRED)
@@ -82,7 +82,13 @@ endif()
 # Exercise 05
 
 add_library(parallel INTERFACE)
-target_link_libraries(parallel INTERFACE Threads::Threads OpenMP::OpenMP_CXX)
+target_link_libraries(parallel INTERFACE
+    Threads::Threads OpenMP::OpenMP_CXX vectorclass::vectorclass)
 
-add_executable(jacobi jacobi.cc jacobi.hh jacobi_par.hh jacobi_vcl.hh jacobi_seq.hh)
-target_link_libraries(jacobi PRIVATE parallel vectorclass::vectorclass)
+add_executable(jacobi jacobi.cc)
+target_link_libraries(jacobi PUBLIC
+    parallel)
+
+add_executable(jacobi_bm jacobi_bm.cc)
+target_link_libraries(jacobi_bm PUBLIC
+    parallel benchmark::benchmark benchmark::benchmark_main)
