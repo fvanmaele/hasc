@@ -101,23 +101,23 @@ static void BM_jacobi_vectorized_wave(benchmark::State& state) {
   }
 }
 
-//static void BM_jacobi_vanilla_parallel(benchmark::State& state) {
-//  // Perform setup here
-//  size_t n = state.range(0);
-//  size_t k = state.range(1); // iterations
+static void BM_jacobi_parallel(benchmark::State& state) {
+  // Perform setup here
+  size_t n = state.range(0);
+  size_t k = state.range(1); // iterations
 
-//  auto context = std::make_shared<GlobalContext>(n);
-//  auto u0 = std::unique_ptr<double>(new (std::align_val_t(64)) double[n * n]);
-//  auto u1 = std::unique_ptr<double>(new (std::align_val_t(64)) double[n * n]);
-//  context->u0 = u0.get();
-//  context->u1 = u1.get();
-//  context->iterations = k;
+  auto context = std::make_shared<GlobalContext>(n);
+  auto u0 = std::unique_ptr<double>(new (std::align_val_t(64)) double[n * n]);
+  auto u1 = std::unique_ptr<double>(new (std::align_val_t(64)) double[n * n]);
+  context->u0 = u0.get();
+  context->u1 = u1.get();
+  context->iterations = k;
 
-//  for (auto _ : state) {
-//    // This code gets timed
-//    jacobi_vanilla_parallel(context);
-//  }
-//}
+  for (auto _ : state) {
+    // This code gets timed
+    jacobi_parallel(context);
+  }
+}
 
 //static void BM_jacobi_vectorized_parallel(benchmark::State& state) {
 //  // Perform setup here
@@ -178,21 +178,24 @@ static void BM_jacobi_vectorized_wave(benchmark::State& state) {
 // Register the function as a benchmark
 // TODO: include billion updates per second
 BENCHMARK(BM_jacobi_vanilla)
-    ->Ranges({{128, 2048}, {128, 1024}})
+    ->ArgsProduct({{128, 256, 512, 1024, 2048}, {80, 160, 320, 640, 1000}})
     ->Unit(benchmark::kMillisecond);
 BENCHMARK_TEMPLATE(BM_jacobi_blocked, 128)
-    ->Ranges({{128, 2048}, {128, 1024}})
+    ->ArgsProduct({{128, 256, 512, 1024, 2048}, {80, 160, 320, 640, 1000}})
     ->Unit(benchmark::kMillisecond); // B = 128
 BENCHMARK_TEMPLATE(BM_jacobi_wave, 40)
-    ->Ranges({{128, 2048}, {128, 1024}})
+    ->ArgsProduct({{128, 256, 512, 1024, 2048}, {80, 160, 320, 640, 1000}})
     ->Unit(benchmark::kMillisecond); // K = 40
 BENCHMARK(BM_jacobi_vectorized)
-    ->Ranges({{128, 2048}, {128, 1024}})
+    ->ArgsProduct({{128, 256, 512, 1024, 2048}, {80, 160, 320, 640, 1000}})
     ->Unit(benchmark::kMillisecond);
 BENCHMARK_TEMPLATE(BM_jacobi_vectorized_wave, 40)
-    ->Ranges({{128, 2048}, {128, 1024}})
+    ->ArgsProduct({{128, 256, 512, 1024, 2048}, {80, 160, 320, 640, 1000}})
     ->Unit(benchmark::kMillisecond); // K = 40
-
+BENCHMARK(BM_jacobi_parallel)
+    ->ArgsProduct({{128, 256, 512, 1024, 2048}, {80, 160, 320, 640, 1000}})
+    ->Unit(benchmark::kMillisecond)
+    ->UseRealTime();
 //BENCHMARK(BM_jacobi_vanilla_parallel)->Ranges({{16, 2048}, {128, 1024}});
 //BENCHMARK(BM_jacobi_vectorized_parallel)->Ranges({{16, 2048}, {128, 1024}});
 //BENCHMARK(BM_jacobi_wave_parallel)->Ranges({{16, 2048}, {128, 1024}});
