@@ -1,0 +1,6 @@
+#ifndef JACOBI_MESSAGE_PASSING_HH
+#define JACOBI_MESSAGE_PASSING_HH
+#include <vector>
+
+
+#endif // JACOBI_MESSAGE_PASSING_HH

@@ -3,21 +3,7 @@
 #include <algorithm>
 #include <utility>
 #include <cmath>
-
-double jacobi_residual(int n, const double *__restrict u)
-{
-  double sqsum = 0;
-
-  for (int i1 = 1; i1 < n - 1; i1++)
-    for (int i0 = 1; i0 < n - 1; i0++)
-    {
-      double Azk = u[i1 * n + i0];
-      Azk -= 0.25 * (u[i1 * n + i0 - n] + u[i1 * n + i0 - 1] +
-                     u[i1 * n + i0 + 1] + u[i1 * n + i0 + n]);
-      sqsum += Azk*Azk;
-    }
-  return std::sqrt(sqsum);
-}
+#include "residual.hh"
 
 std::pair<int, double>
 jacobi_vanilla_kernel(int n, int iterations, double *__restrict uold,
@@ -81,7 +67,12 @@ jacobi_blocked_kernel(int n, int iterations, double *__restrict uold,
         unew[i1 * n + i0] =
             0.25 * (uold[i1 * n + i0 - n] + uold[i1 * n + i0 - 1] +
                     uold[i1 * n + i0 + 1] + uold[i1 * n + i0 + n]);
-
+    for (int I1 = 1; I1 < 1 + blocksB; I1 += B)
+      for (int i1 = I1; i1 < I1 + B; i1++)
+        for (int i0 = 1 + blocksB; i0 < n - 1; i0++)
+          unew[i1 * n + i0] =
+              0.25 * (uold[i1 * n + i0 - n] + uold[i1 * n + i0 - 1] +
+                      uold[i1 * n + i0 + 1] + uold[i1 * n + i0 + n]);
     using std::swap;
     swap(uold, unew);
 
