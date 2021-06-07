@@ -8,6 +8,7 @@
 #include <list>
 #include <map>
 #include <chrono>
+#include <iostream>
 #include "Barrier.hh"
 
 class MessageSystem {
