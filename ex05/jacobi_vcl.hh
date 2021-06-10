@@ -2,7 +2,6 @@
 #define JACOBI_VCL_HH
 #include <algorithm>
 #include <utility>
-#include <cmath>
 #include <vectorclass.h>
 #include "residual.hh"
 

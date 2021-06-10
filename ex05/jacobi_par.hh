@@ -2,7 +2,6 @@
 #define JACOBI_PAR_HH
 #include <algorithm>
 #include <utility>
-#include <cmath>
 #include "residual.hh"
 
 std::pair<int, double>
@@ -37,11 +36,11 @@ jacobi_parallel_kernel(int n, int iterations, double *__restrict uold,
   return std::make_pair(i, residual);
 }
 
-std::pair<int, double>
-jacobi_parallel_wave_kernel(int n, int iterations, double *__restrict uold,
-                            double *__restrict unew, double tol, int tol_check)
-{
+//std::pair<int, double>
+//jacobi_parallel_wave_kernel(int n, int iterations, double *__restrict uold,
+//                            double *__restrict unew, double tol, int tol_check)
+//{
 
-}
+//}
 
 #endif // JACOBI_PAR_HH

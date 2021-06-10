@@ -12,7 +12,7 @@ find_package(OpenMP REQUIRED)
 find_package(vectorclass REQUIRED)
 
 # Define optimization levels
-set(OPT_VEC_REPORT ON)
+set(OPT_VEC_REPORT OFF)
 set(OPT_FAST_MATH OFF)
 set(OPT_TSAN OFF)
 set(OPT_ASAN OFF)
@@ -77,8 +77,6 @@ elseif(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
         )
 endif()
 
-#add_compile_definitions(NDEBUG)
-
 # Exercise 05
 
 add_library(parallel INTERFACE)
@@ -86,9 +84,17 @@ target_link_libraries(parallel INTERFACE
     Threads::Threads OpenMP::OpenMP_CXX vectorclass::vectorclass)
 
 add_executable(jacobi jacobi.cc)
-target_link_libraries(jacobi PUBLIC
+target_link_libraries(jacobi
     parallel)
 
 add_executable(jacobi_bm jacobi_bm.cc)
-target_link_libraries(jacobi_bm PUBLIC
+target_link_libraries(jacobi_bm
     parallel benchmark::benchmark benchmark::benchmark_main)
+
+add_executable(jacobi_msg jacobi_msg.cc MessageSystem.hh)
+target_link_libraries(jacobi_msg
+    parallel)
+
+#target_compile_definitions(jacobi_msg PRIVATE PRINT_RESULT)
+#target_compile_definitions(jacobi_msg PRIVATE PRINT_STEPS)
+#target_compile_definitions(jacobi_msg PRIVATE _GLIBCXX_DEBUG)

@@ -2,7 +2,6 @@
 #define JACOBI_SEQ_HH
 #include <algorithm>
 #include <utility>
-#include <cmath>
 #include "residual.hh"
 
 std::pair<int, double>

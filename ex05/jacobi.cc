@@ -146,18 +146,18 @@ int main(int argc, char **argv)
 
   std::cout << std::endl;
 
-  std::cout << "vanilla, iterations: " << convergence[0].first
-            << ", residual: " << convergence[0].second << std::endl;
-  std::cout << "blocked, iterations: " << convergence[1].first
-            << ", residual: " << convergence[1].second << std::endl;
-  std::cout << "wave, iterations: " << convergence[2].first
-            << ", residual: " << convergence[2].second << std::endl;
-  std::cout << "vectorized, iterations: " << convergence[3].first
-            << ", residual: " << convergence[3].second << std::endl;
-  std::cout << "vectorized_wave, iterations: " << convergence[4].first
-            << ", residual: " << convergence[4].second << std::endl;
-  std::cout << "parallel, iterations: " << convergence[5].first
-            << ", residual: " << convergence[5].second << std::endl;
+//  std::cout << "vanilla, iterations: " << convergence[0].first
+//            << ", residual: " << convergence[0].second << std::endl;
+//  std::cout << "blocked, iterations: " << convergence[1].first
+//            << ", residual: " << convergence[1].second << std::endl;
+//  std::cout << "wave, iterations: " << convergence[2].first
+//            << ", residual: " << convergence[2].second << std::endl;
+//  std::cout << "vectorized, iterations: " << convergence[3].first
+//            << ", residual: " << convergence[3].second << std::endl;
+//  std::cout << "vectorized_wave, iterations: " << convergence[4].first
+//            << ", residual: " << convergence[4].second << std::endl;
+//  std::cout << "parallel, iterations: " << convergence[5].first
+//            << ", residual: " << convergence[5].second << std::endl;
 
   // deallocate arrays
   delete[] context->u1;
