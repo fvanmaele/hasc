@@ -16,13 +16,12 @@ void thread(const int rank, const int P, int n, int iterations, int inexact,
 {
   register_thread(rank);
 
-  // Note: n does not include padding, unlike the original problem.
-  int n_local = n / P;
-  assert(n == n_local * P);
+  int n_local = (n - 2) / P;
+  assert((n - 2) == n_local * P);
 
   // local chunks, includes padding (radius = 1)
   int Ny = n_local + 2;
-  int Nx = n + 2;
+  int Nx = n;
   int N_local = Ny * Nx;
 
   std::vector<double> uold_local(N_local, 0.0);
@@ -31,7 +30,7 @@ void thread(const int rank, const int P, int n, int iterations, int inexact,
   // assign local values (consistent over multiple processes)
   std::mt19937_64 rgen(seed);
   std::uniform_real_distribution<double> dist1(0.0, 1.0);
-  rgen.discard(rank * n * n_local);
+  rgen.discard(rank * (n - 2) * n_local);
 
   int offset = 0;
   for (int y = 0; y < Ny; ++y) {

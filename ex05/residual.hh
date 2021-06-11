@@ -16,7 +16,7 @@ double jacobi_residual(int n, const double *__restrict u,
       double Azk = 4*u[i1*n + i0];
       Azk -= u[i1*n + i0 - n] + u[i1*n + i0 - 1] + u[i1*n + i0 + 1] +
              u[i1*n + i0 + n];
-      Azk *= (double)1/(n-1);
+      Azk *= (double)1/((n-1)*(n-1));
       sqsum += Azk*Azk;
     }
   return std::sqrt(sqsum);
