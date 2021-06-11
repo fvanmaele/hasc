@@ -212,10 +212,10 @@ int main(int argc, char** argv)
   for (int i = 0; i < P; ++i) {
     threads[i].join();
   }
-  std::cout << (n + 2) * (n + 2);
+  std::cout << n * n;
   std::cout << "," << inexact;
   double updates = iterations;
-  updates *= n*n;
+  updates *= (n - 2) * (n - 2);
   double elapsed = elapsed_time[0];
   std::cout << "," << updates / elapsed / 1e9;
   std::cout << std::endl;
