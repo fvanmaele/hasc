@@ -69,7 +69,7 @@ endif()
 # Set optimization flags
 if (MSVC)
     add_compile_options(
-        /W3 /arch:AVX
+        /W3 /arch:AVX /Zc:sizedDealloc-
         )
 elseif(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
     add_compile_options(

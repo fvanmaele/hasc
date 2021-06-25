@@ -2,6 +2,7 @@
 #define JACOBI_SEQ_HH
 #include <algorithm>
 #include <utility>
+#include <stdexcept>
 #include "residual.hh"
 
 std::pair<int, double>
@@ -39,7 +40,7 @@ jacobi_blocked_kernel(int n, int iterations, double *__restrict uold,
                       double *__restrict unew, double tol, int tol_check)
 {
   int blocksB = ((n - 2) / B) * B;
-  int remainderB = (n - 2) % B; // unused?
+  //int remainderB = (n - 2) % B; // unused?
   // std::cout << "blocksB=" << blocksB << " remainderB=" << remainderB <<
   // std::endl;
 

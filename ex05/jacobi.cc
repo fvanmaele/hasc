@@ -20,8 +20,8 @@ int main(int argc, char **argv)
     std::cout << "usage: ./jacobi_vanilla <size> <iterations>" << std::endl;
     exit(1);
   }
-  sscanf(argv[1], "%d", &n);
-  sscanf(argv[2], "%d", &iterations);
+  sscanf_s(argv[1], "%d", &n);
+  sscanf_s(argv[2], "%d", &iterations);
   // std::cout << "jacobi_vanilla: n=" << n
   //        << " iterations=" << iterations
   //        << " memory (mbytes)=" << (n*n)*8.0*2.0/1024.0/1024.0
@@ -146,18 +146,18 @@ int main(int argc, char **argv)
 
   std::cout << std::endl;
 
-//  std::cout << "vanilla, iterations: " << convergence[0].first
-//            << ", residual: " << convergence[0].second << std::endl;
-//  std::cout << "blocked, iterations: " << convergence[1].first
-//            << ", residual: " << convergence[1].second << std::endl;
-//  std::cout << "wave, iterations: " << convergence[2].first
-//            << ", residual: " << convergence[2].second << std::endl;
-//  std::cout << "vectorized, iterations: " << convergence[3].first
-//            << ", residual: " << convergence[3].second << std::endl;
-//  std::cout << "vectorized_wave, iterations: " << convergence[4].first
-//            << ", residual: " << convergence[4].second << std::endl;
-//  std::cout << "parallel, iterations: " << convergence[5].first
-//            << ", residual: " << convergence[5].second << std::endl;
+ std::cout << "vanilla, iterations: " << convergence[0].first
+           << ", residual: " << convergence[0].second << std::endl;
+ std::cout << "blocked, iterations: " << convergence[1].first
+           << ", residual: " << convergence[1].second << std::endl;
+ std::cout << "wave, iterations: " << convergence[2].first
+           << ", residual: " << convergence[2].second << std::endl;
+ std::cout << "vectorized, iterations: " << convergence[3].first
+           << ", residual: " << convergence[3].second << std::endl;
+ std::cout << "vectorized_wave, iterations: " << convergence[4].first
+           << ", residual: " << convergence[4].second << std::endl;
+ std::cout << "parallel, iterations: " << convergence[5].first
+           << ", residual: " << convergence[5].second << std::endl;
 
   // deallocate arrays
   delete[] context->u1;
